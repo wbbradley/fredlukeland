@@ -1,8 +1,8 @@
 # Fred and Luke Land
 
 A disposable Paper + Floodgate + Geyser stack for a Java client on Linux and a
-Bedrock client on iPad. Procman handles downloads, ordered startup, combined
-logs, and teardown.
+Bedrock client on iPad. [Procman](https://github.com/wbbradley/procman) handles
+downloads, ordered startup, combined logs, and teardown.
 
 Only the Java world's files persist. Paper 26.2 stores all three dimensions in
 one world tree:
@@ -22,9 +22,15 @@ logs are disposable.
 
 - Linux
 - Java 25 or newer
-- `procman`, `curl`, `gh`, and `sha256sum`
+- Rust/Cargo, `curl`, `gh`, and `sha256sum`
 - An authenticated GitHub CLI (`gh auth status`) to fetch the pinned Geyser
   development artifact on the first launch
+
+Install [Procman from crates.io](https://crates.io/crates/procman):
+
+```bash
+cargo install procman
+```
 
 ## Start
 
