@@ -1,0 +1,34 @@
+config {
+  logs = ".logs/procman"
+}
+
+arg memory {
+  type = string
+  default = "4G"
+  short = "m"
+  description = "Maximum heap size for Paper (for example, 2G or 6G)"
+}
+
+job bootstrap {
+  cwd "."
+  run "./scripts/bootstrap.sh"
+}
+
+service paper {
+  cwd "."
+  env PAPER_MEMORY = args.memory
+  wait {
+    after @bootstrap
+  }
+  run "./scripts/start-paper.sh"
+}
+
+service geyser {
+  cwd "."
+  wait {
+    after @bootstrap
+    output_matches @paper "Done (" { timeout = 5m }
+    exists ".run/paper/plugins/floodgate/key.pem" { timeout = 30s }
+  }
+  run "./scripts/start-geyser.sh"
+}
