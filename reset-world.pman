@@ -1,0 +1,22 @@
+config {
+  logs = ".logs/reset-world"
+}
+
+arg seed {
+  type = string
+  description = "Signed numeric Minecraft world seed"
+}
+
+arg difficulty {
+  type = string
+  description = "World difficulty: peaceful, easy, normal, or hard"
+}
+
+job reset_world {
+  cwd "."
+  env {
+    WORLD_SEED = args.seed
+    WORLD_DIFFICULTY = args.difficulty
+  }
+  run "./scripts/reset-world.sh"
+}

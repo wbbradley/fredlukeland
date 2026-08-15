@@ -80,7 +80,7 @@ if ! verify "$geyser_sha" "$cache_dir/Geyser-Standalone-26.40.jar"; then
   trap - EXIT
 fi
 
-# The process tree is disposable. Only the three world directories above survive.
+# The process tree is disposable. Only the world tree above survives.
 if [[ -e "$run_dir" ]]; then
   if [[ "$run_dir" != "$root_dir/.run" ]]; then
     echo "Refusing to remove unexpected runtime path: $run_dir" >&2
@@ -95,6 +95,27 @@ cp "$cache_dir/floodgate-spigot-2.2.5-140.jar" "$run_dir/paper/plugins/floodgate
 cp "$cache_dir/Geyser-Standalone-26.40.jar" "$run_dir/geyser/Geyser-Standalone.jar"
 cp "$root_dir/config/server.properties" "$run_dir/paper/server.properties"
 printf 'eula=true\n' > "$run_dir/paper/eula.txt"
+
+seed_file="$worlds_dir/world/.fredlukeland-seed"
+difficulty_file="$worlds_dir/world/.fredlukeland-difficulty"
+
+if [[ -f "$seed_file" ]]; then
+  IFS= read -r world_seed < "$seed_file"
+  if [[ ! "$world_seed" =~ ^-?[0-9]+$ ]]; then
+    echo "Invalid seed marker: $seed_file" >&2
+    exit 1
+  fi
+  printf 'level-seed=%s\n' "$world_seed" >> "$run_dir/paper/server.properties"
+fi
+
+if [[ -f "$difficulty_file" ]]; then
+  IFS= read -r world_difficulty < "$difficulty_file"
+  case "$world_difficulty" in
+    peaceful|easy|normal|hard) ;;
+    *) echo "Invalid difficulty marker: $difficulty_file" >&2; exit 1 ;;
+  esac
+  sed -i "s/^difficulty=.*/difficulty=$world_difficulty/" "$run_dir/paper/server.properties"
+fi
 
 ln -s "$worlds_dir/world" "$run_dir/paper/world"
 ln -s "$paper_cache_dir/cache" "$run_dir/paper/cache"

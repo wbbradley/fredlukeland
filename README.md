@@ -22,7 +22,7 @@ logs are disposable.
 
 - Linux
 - Java 25 or newer
-- Rust/Cargo, `curl`, `gh`, and `sha256sum`
+- Rust/Cargo, `curl`, `flock`, `gh`, `sha256sum`, and `ss`
 - An authenticated GitHub CLI (`gh auth status`) to fetch the pinned Geyser
   development artifact on the first launch
 
@@ -48,6 +48,22 @@ procman procman.pman -- --memory 6G
 Stop the complete stack with Ctrl-C. Procman sends termination to Paper and
 Geyser together.
 
+## Reset the world
+
+Stop the running stack, then provide both a signed numeric seed and a
+difficulty:
+
+```bash
+procman reset-world.pman -- --seed 8675309 --difficulty normal
+procman procman.pman
+```
+
+Valid difficulties are `peaceful`, `easy`, `normal`, and `hard`. The reset
+workflow refuses to run while Paper has the world locked. It moves the previous
+world to `worlds/backups/<UTC timestamp>/world` before preparing the replacement,
+so a reset is recoverable. Seed and difficulty markers live inside the new
+world tree and are applied to Paper's disposable configuration at startup.
+
 ## Connect
 
 - Fred, Java 26.2 on Linux: `<server-lan-ip>:25565` over TCP.
@@ -70,4 +86,5 @@ official build once 26.40-family support reaches Geyser's normal downloads.
 
 ```bash
 procman procman.pman --check
+procman reset-world.pman --check -- --seed 8675309 --difficulty normal
 ```
